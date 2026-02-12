@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- colour selector for nav items -->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- selector allows different colours based on state
+    android checks from the top bottom, uses first match -->
+
+    <item
+        android:color="#E87ED1"
+        android:state_checked="true"/>
+    <!-- pink when selected -->
+
+    <item
+        android:color="#483D8B "/>
+        <!-- dark purple whe not selected -->
+</selector>

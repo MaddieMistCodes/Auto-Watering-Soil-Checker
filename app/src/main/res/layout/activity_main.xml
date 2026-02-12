@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- activity_main.xml - The layout file for our main screen -->
+
+<!--
+LinearLayout arranges children in row or column
+
+xmlns:android - required, lets us use android attributes
+xmlns:app - needed for material design attributes
+android:orientation="vertical" - stack children top to bottom
+android:layout_width="match_parent" - fill entire width
+android:layout_height="match_parent" - fill entire height
+android:gravity="center" - center content
+android:padding="24dp" - space from edges (dp - density independent pixels)
+android:background="#FFFFFF" - White background (hex colour)
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!--
+    height = 0dp, means calculate my height
+    weight = 1, means take all remaining space
+    result: fills everything except navigation bar
+    -->
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+        <!-- this allows scrolling if content is taller than the screen -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!--
+            TextView displays text on screen
+            android:layout_width="wrap_content" - only as wide as needed
+            android:layout_height="wrap_content" - only as tall as needed
+            android:text="Hello World" - the text to display
+            android:textSize="24sp" - font size (sp = scale-independent pixels)
+            android:textColor="#000000" - black colour
+            -->
+
+            <!-- allows to reference in java, "@+id/tvTitle" -->
+            <!-- automation section -->
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Welcome to example 1"
+                android:textSize="32sp"
+                android:textColor="#1A5276"
+                android:textStyle="bold"/>
+
+            <!--
+            android:layout_marginTop="16dp" - adds 16dp space above this element
+            "#566573" - grey colour
+            -->
+            <!-- automation section  -->
+            <!-- allows to reference in java, "@+id/tvSubtitle" -->
+            <TextView
+                android:id="@+id/tvSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="IoT Sensor Dashboard"
+                android:textSize="16sp"
+                android:textColor="#566573"
+                android:layout_marginBottom="32dp"/>
+
+            <!-- sensor value card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#F8F9FA">
+                <!-- cardview creates card with shadows and rounded corners -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Current Sensor Value"
+                        android:textSize="14sp"
+                        android:textColor="#483D8B"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:id="@+id/tvSensorValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="--"
+                        android:textSize="48sp"
+                        android:textColor="#95A5A6"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/tvSensorStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No Data"
+                        android:textSize="14sp"
+                        android:textColor="#95A5A6"
+                        android:layout_marginTop="4dp"/>
+
+                    <TextView
+                        android:id="@+id/tvReadingCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Readings Saved: 0"
+                        android:textColor="#95A5A6"
+                        android:textSize="12sp"
+                        android:layout_marginTop="12dp"/>
+
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Test Input"
+                android:textSize="18sp"
+                android:textColor="#483D8B"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <!-- horizontal = children stay side by side -->
+
+                <EditText
+                    android:id="@+id/etTestValue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Enter value (0-100)"
+                    android:inputType="number"
+                    android:padding="16dp"
+                    android:background="@drawable/edit_text_background"
+                    android:textColor="#2C3E50"
+                    android:textColorHint="#95A5A6"/>
+
+                <!-- edit text = input field, android:hint is placeholder text, android:inputType - only numbers -->
+
+                <Button
+                    android:id="@+id/btnUpdate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Update"
+                    android:layout_marginStart="12dp"
+                    android:backgroundTint="#1A5276"
+                    android:textColor="#FFFFFF"
+                    android:padding="16dp"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Navigation Bar -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        app:menu="@menu/bottom_nav_menu"
+        app:itemIconTint="@color/nav_item_colour"
+        app:itemTextColor="@color/nav_item_colour"
+        app:labelVisibilityMode="labeled"/>
+
+    <!--
+    app:menu="@menu/bottom_nav_menu" - links to our menu file
+    app:itemIconTint="@color/nav_item_colour" - color for icon
+    app:itemTextColor="@color/nav_item_colour" - color for text
+    app:labelVisibilityMode="labeled" - always show text labels
+    -->
+</LinearLayout>

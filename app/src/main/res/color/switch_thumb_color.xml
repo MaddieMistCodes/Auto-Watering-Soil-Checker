@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- colour for switch thumb (circle) -->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="#483D8B" android:state_checked="true"/>
+    <!-- dark purple when on -->
+    <item android:color="#E1BEE7"/>
+    <!-- light pink when off -->
+
+</selector>
