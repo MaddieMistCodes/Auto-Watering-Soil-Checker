@@ -23,6 +23,10 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.DataSnapshot;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,16 +62,28 @@ public class GraphsActivity extends AppCompatActivity {
         loadCharts();
     }
     private void loadCharts(){
-        List<SensorReading> readings = DataManager.getInstance().getAllReadings();
-        if(readings.isEmpty()){
-            tvDataInfo.setText("No data yet - add readings");
-        }
-        else{
-            tvDataInfo.setText("Showing " + readings.size() + " readings");
-        }
-        setupLineChart(readings);
-        setupBarChart(readings);
-        setupPieChart(readings);
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference("sensor/readings");
+        database.get().addOnSuccessListener(snapshot -> {
+            List<SensorReading> readings = new ArrayList<>();
+
+            if(snapshot.exists()){
+                for(DataSnapshot child : snapshot.getChildren()){
+                    long timestamp = Long.parseLong(child.getKey());
+                    int value = child.getValue(Integer.class);
+                    readings.add(new SensorReading(value, timestamp));
+                }
+            }
+
+            if(readings.isEmpty()){
+                tvDataInfo.setText("No data yet");
+            } else {
+                tvDataInfo.setText("Showing " + readings.size() + " readings");
+            }
+
+            setupLineChart(readings);
+            setupBarChart(readings);
+            setupPieChart(readings);
+        });
     }
     private void  setupLineChart(List<SensorReading> readings){
         ArrayList<Entry> entries = new ArrayList<>();

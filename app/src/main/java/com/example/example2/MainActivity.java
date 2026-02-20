@@ -14,6 +14,16 @@ import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+// Handler and Work imports
+import android.os.Handler;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import java.util.concurrent.TimeUnit;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 // Intent used to navigate through activities
@@ -38,6 +48,9 @@ public class MainActivity extends AppCompatActivity{
     private static final int THRESHOLD_LOW = 30;
     private static final int THRESHOLD_HIGH = 65;
 
+    // Firebase reference
+    private DatabaseReference database;
+
     @Override
     // @Override tells Java we are replacing a method from parent class
     protected void onCreate(Bundle savedInstanceState){
@@ -49,10 +62,34 @@ public class MainActivity extends AppCompatActivity{
         // Connect this activity to its layout file
         // R.layout.activity_main refers to res/layout/activity_main.xml
         initialiseViews();
+        database = FirebaseDatabase.getInstance().getReference("sensor");
         setUpBottomNavigation();
         setUpButtonListeners();
         updateReadingCount();
 
+        // NEW FUNCTIONALITY
+        // Handler allows new value read every time user opens app
+        // Work Manager allows background check of values to allow constant readings on graphs
+        Handler handler = new Handler();
+        Runnable hourlyCheck = new Runnable() {
+            @Override
+            public void run() {
+                readFirebaseData();
+                handler.postDelayed(this, 60 * 60 * 1000);
+            }
+        };
+        handler.post(hourlyCheck);
+
+        // WorkManager - runs in background when app is closed
+        PeriodicWorkRequest moistureCheck = new PeriodicWorkRequest.Builder(
+                MoistureCheckWorker.class,
+                1, TimeUnit.HOURS)
+                .build();
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "moistureCheck",
+                ExistingPeriodicWorkPolicy.KEEP,
+                moistureCheck);
     }
     protected void onResume(){
         super.onResume();
@@ -109,7 +146,7 @@ public class MainActivity extends AppCompatActivity{
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateSensorValue();
+                readFirebaseData();
             }
         });
     }
@@ -165,5 +202,27 @@ public class MainActivity extends AppCompatActivity{
         if(tvReadingCount != null){
             tvReadingCount.setText("Readings saved: " + count);
         }
+    }
+    private void readFirebaseData() {
+        database.child("moisture").get().addOnSuccessListener(snapshot -> {
+            if (snapshot.exists()) {
+                float moisture = Float.parseFloat(snapshot.getValue().toString());
+                int moistureInt = (int) moisture;
+
+                tvSensorValue.setText(String.valueOf(moistureInt));
+                DataManager.getInstance().addReading(moistureInt);
+                updateReadingCount();
+
+                // Save reading with timestamp to Firebase
+                long timestamp = System.currentTimeMillis();
+                database.child("readings").child(String.valueOf(timestamp)).setValue(moistureInt);
+
+                Toast.makeText(this, "Moisture read: " + moistureInt + "%", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "No data found", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Failed to read data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
     }
 }
