@@ -197,51 +197,44 @@ public class GraphsActivity extends AppCompatActivity {
     }
     private void setupPieChart(List<SensorReading> readings){
         ArrayList<PieEntry> entries = new ArrayList<>();
-        ArrayList<Integer> colors = new ArrayList<Integer>();
+        ArrayList<Integer> colors = new ArrayList<>();
 
-        int lowCount = DataManager.getInstance().countByStatus("Low");
-        int mediumCount = DataManager.getInstance().countByStatus("Medium");
-        int highCount = DataManager.getInstance().countByStatus("High");
+        int lowCount = 0, mediumCount = 0, highCount = 0;
 
-        if(lowCount>0){
-            entries.add(new PieEntry(lowCount, "Low"));
-            colors.add(COLOR_RED);
+        for(SensorReading reading : readings){
+            String status = reading.getStatus();
+            if(status.equals("Low")) lowCount++;
+            else if(status.equals("Medium")) mediumCount++;
+            else highCount++;
         }
-        if(mediumCount>0){
-            entries.add(new PieEntry(mediumCount, "Medium"));
-            colors.add(COLOR_YELLOW);
-        }
-        if(highCount>0){
-            entries.add(new PieEntry(mediumCount, "High"));
-            colors.add(COLOR_GREEN);
-        }
+
+        if(lowCount > 0){ entries.add(new PieEntry(lowCount, "Low")); colors.add(COLOR_RED); }
+        if(mediumCount > 0){ entries.add(new PieEntry(mediumCount, "Medium")); colors.add(COLOR_YELLOW); }
+        if(highCount > 0){ entries.add(new PieEntry(highCount, "High")); colors.add(COLOR_GREEN); }
+
         if(entries.isEmpty()){
             pieChart.clear();
             pieChart.setNoDataText("No data available");
             pieChart.invalidate();
             return;
         }
+
         PieDataSet dataSet = new PieDataSet(entries, "Distribution");
         dataSet.setColors(colors);
         dataSet.setValueTextSize(14f);
         dataSet.setValueTextColor(Color.WHITE);
-        dataSet.setSliceSpace(2f); // Space between slices
-        // Create Pie Data
-        PieData pieData = new PieData(dataSet);
+        dataSet.setSliceSpace(2f);
 
-        pieChart.setData(pieData);
+        pieChart.setData(new PieData(dataSet));
         pieChart.getDescription().setEnabled(false);
         pieChart.setHoleRadius(40f);
         pieChart.setTransparentCircleRadius(45f);
         pieChart.setCenterText("Status\nDistribution");
-
         pieChart.setCenterTextSize(12f);
         pieChart.setEntryLabelTextSize(12f);
         pieChart.setEntryLabelColor(Color.WHITE);
         pieChart.getLegend().setEnabled(true);
-
         pieChart.invalidate();
-
     }
     private void initializeViews(){
         lineChart = findViewById(R.id.lineChart);

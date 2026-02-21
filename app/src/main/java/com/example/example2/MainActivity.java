@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity{
 
     // Firebase reference
     private DatabaseReference database;
+    //private static boolean initialReadDone = false;
 
     @Override
     // @Override tells Java we are replacing a method from parent class
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity{
         // NEW FUNCTIONALITY
         // Handler allows new value read every time user opens app
         // Work Manager allows background check of values to allow constant readings on graphs
+
         Handler handler = new Handler();
         Runnable hourlyCheck = new Runnable() {
             @Override
