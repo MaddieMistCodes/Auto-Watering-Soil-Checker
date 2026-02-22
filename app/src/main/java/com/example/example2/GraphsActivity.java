@@ -271,7 +271,7 @@ public class GraphsActivity extends AppCompatActivity {
     private void navigateToActivity(Class<?> activityClass){
         Intent intent = new Intent(GraphsActivity.this, activityClass);
         startActivity(intent);
-        finish();
+        finish(); // Destroys current activity completely when moving away
     }
 
 }

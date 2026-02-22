@@ -21,6 +21,7 @@ import androidx.work.WorkManager;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import java.util.concurrent.TimeUnit;
 
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -40,13 +41,15 @@ public class MainActivity extends AppCompatActivity{
 
     // Colour constants
     // Converting hex colour to integer
-    private static final int COLOR_RED = Color.parseColor("#E743C3");
-    private static final int COLOR_YELLOW = Color.parseColor("#F39C12");
-    private static final int COLOR_GREEN = Color.parseColor("#27AE60");
+    private static final int COLOR_RED = Color.parseColor("#FF6B6B");
+    private static final int COLOR_YELLOW = Color.parseColor("#FFD93D");
+    private static final int COLOR_GREEN = Color.parseColor("#6BCB77");
+    private static final int COLOR_BLUE = Color.parseColor("#4ECDC4");
 
     // Threshold Constants
     private static final int THRESHOLD_LOW = 30;
     private static final int THRESHOLD_HIGH = 65;
+    private static final int THRESHOLD_TOO_HIGH = 85;
 
     // Firebase reference
     private DatabaseReference database;
@@ -68,6 +71,8 @@ public class MainActivity extends AppCompatActivity{
         setUpButtonListeners();
         updateReadingCount();
 
+
+        /*
         // NEW FUNCTIONALITY
         // Handler allows new value read every time user opens app
         // Work Manager allows background check of values to allow constant readings on graphs
@@ -92,10 +97,12 @@ public class MainActivity extends AppCompatActivity{
                 "moistureCheck",
                 ExistingPeriodicWorkPolicy.KEEP,
                 moistureCheck);
+
+         */
     }
     protected void onResume(){
         super.onResume();
-        updateReadingCount();
+        //updateReadingCount();
     }
     private void setUpBottomNavigation(){
         // Find bottom navigation in layout
@@ -152,7 +159,8 @@ public class MainActivity extends AppCompatActivity{
             }
         });
     }
-    private void updateSensorValue(){
+    // Redundant with firebase data
+    /*private void updateSensorValue(){
         String inputText = etTestValue.getText().toString().trim();
         if(inputText.isEmpty()){
             Toast.makeText(this, "Please enter a value", Toast.LENGTH_SHORT).show();
@@ -168,7 +176,7 @@ public class MainActivity extends AppCompatActivity{
             DataManager.getInstance().addReading(value);
             tvSensorValue.setText(String.valueOf(value));
             updateValueColour(value);
-            updateReadingCount();
+            //updateReadingCount();
             etTestValue.setText("");
 
             int count = DataManager.getInstance().getReadingCount();
@@ -180,30 +188,32 @@ public class MainActivity extends AppCompatActivity{
             // Runs if parse int fails
             Toast.makeText(this, "Please enter a valid number", Toast.LENGTH_SHORT).show();
         }
-    }
+    }*/
     private void updateValueColour(int value){
         if(value < THRESHOLD_LOW){
             tvSensorValue.setTextColor(COLOR_RED);
-            tvSensorValue.setText("Low");
-            tvSensorValue.setTextColor(COLOR_RED);
+            //tvSensorValue.setText("Low");
         }
         else if(value <= THRESHOLD_HIGH){
             tvSensorValue.setTextColor(COLOR_YELLOW);
-            tvSensorValue.setText("Medium");
-            tvSensorValue.setTextColor(COLOR_YELLOW);
+            //tvSensorValue.setText("Medium");
+        }
+        else if(value <= THRESHOLD_TOO_HIGH){
+            tvSensorValue.setTextColor(COLOR_GREEN);
+            //tvSensorValue.setText("High");
         }
         else{
-            tvSensorValue.setTextColor(COLOR_GREEN);
-            tvSensorValue.setText("High");
-            tvSensorValue.setTextColor(COLOR_GREEN);
+            tvSensorValue.setTextColor(COLOR_BLUE);
         }
     }
-
+    // Redundant with firebase data
     private void updateReadingCount(){
-        int count = DataManager.getInstance().getReadingCount();
-        if(tvReadingCount != null){
-            tvReadingCount.setText("Readings saved: " + count);
-        }
+        database.child("readings").get().addOnSuccessListener(snapshot -> {
+            int count = (int) snapshot.getChildrenCount();
+            if(tvReadingCount != null){
+                tvReadingCount.setText("Readings saved: " + count);
+            }
+        });
     }
     private void readFirebaseData() {
         database.child("moisture").get().addOnSuccessListener(snapshot -> {
@@ -212,12 +222,27 @@ public class MainActivity extends AppCompatActivity{
                 int moistureInt = (int) moisture;
 
                 tvSensorValue.setText(String.valueOf(moistureInt));
-                DataManager.getInstance().addReading(moistureInt);
-                updateReadingCount();
+                updateValueColour(moistureInt);
+                //DataManager.getInstance().addReading(moistureInt);
+                //updateReadingCount();
 
                 // Save reading with timestamp to Firebase
                 long timestamp = System.currentTimeMillis();
                 database.child("readings").child(String.valueOf(timestamp)).setValue(moistureInt);
+
+                // Keep only latest 10 readings
+                database.child("readings").get().addOnSuccessListener(readingsSnapshot -> {
+                    // count all children
+                    long count = readingsSnapshot.getChildrenCount();
+                    // run through each child
+                    for (DataSnapshot child : readingsSnapshot.getChildren()) {
+                        // Ensures only 10 readings on app by looping
+                        if (count <= 10) break;
+                        child.getRef().removeValue();
+                        // Reduce child count by one until 10 or less
+                        count--;
+                    }
+                });
 
                 Toast.makeText(this, "Moisture read: " + moistureInt + "%", Toast.LENGTH_SHORT).show();
             } else {
