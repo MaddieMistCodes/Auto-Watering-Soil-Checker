@@ -1,5 +1,6 @@
 package com.example.example2;
 // Package declaration - this file belongs to com.example.example2
+import android.content.SharedPreferences;
 import android.os.Bundle;
 // Bundle is used to save/restore activity state
 import androidx.appcompat.app.AppCompatActivity;
@@ -100,9 +101,17 @@ public class MainActivity extends AppCompatActivity{
 
          */
     }
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         //updateReadingCount();
+        //readFirebaseData();
+        SharedPreferences prefs = getSharedPreferences("MyApp", MODE_PRIVATE);
+        int lastReading = prefs.getInt("lastReading", -1);
+        // only restore if real reading, avoids -1 being displayed on initial set up
+        if (lastReading != -1) {
+            tvSensorValue.setText(String.valueOf(lastReading));
+            updateValueColour(lastReading);
+        }
     }
     private void setUpBottomNavigation(){
         // Find bottom navigation in layout
@@ -138,9 +147,14 @@ public class MainActivity extends AppCompatActivity{
 
     // Custom method to use intent to navigate activities
     private void navigateToActivity(Class<?> activityClass){
+        // Intent parameters: where your coming from, where your going to
         Intent intent = new Intent(MainActivity.this, activityClass);
+        // Organise the activities stacking up - so bottom nav does not get muddled
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        // Execute the navigation, to the new screen
         startActivity(intent);
-        finish();
+        // Destroys the actvity we are moving from
+        //finish();
     }
     // Custom method to find views in layout
     private void initialiseViews(){
@@ -150,9 +164,9 @@ public class MainActivity extends AppCompatActivity{
         btnUpdate = findViewById(R.id.btnUpdate);
         tvReadingCount = findViewById(R.id.tvReadingCount);
     }
-    // Set up button click listeners
     private void setUpButtonListeners(){
         btnUpdate.setOnClickListener(new View.OnClickListener() {
+            // When button clicked for "update", it will fun firebase to get the reading
             @Override
             public void onClick(View v) {
                 readFirebaseData();
@@ -208,6 +222,7 @@ public class MainActivity extends AppCompatActivity{
     }
     // Redundant with firebase data
     private void updateReadingCount(){
+        // Update reading count based on firebase readings
         database.child("readings").get().addOnSuccessListener(snapshot -> {
             int count = (int) snapshot.getChildrenCount();
             if(tvReadingCount != null){
@@ -216,10 +231,19 @@ public class MainActivity extends AppCompatActivity{
         });
     }
     private void readFirebaseData() {
+        // Go to firebase and fine moisture node, read once. If succesful, store in snapshot
         database.child("moisture").get().addOnSuccessListener(snapshot -> {
+            // If data is there
             if (snapshot.exists()) {
+                // Get value of snapshot (object), parse to a String and then a float
                 float moisture = Float.parseFloat(snapshot.getValue().toString());
+                // Converts to int for clean percentage
                 int moistureInt = (int) moisture;
+                // Display in tv box and update colour
+
+                // Basically jots down a note of the latest reading
+                SharedPreferences prefs = getSharedPreferences("MyApp", MODE_PRIVATE);
+                prefs.edit().putInt("lastReading", moistureInt).apply();
 
                 tvSensorValue.setText(String.valueOf(moistureInt));
                 updateValueColour(moistureInt);
@@ -230,9 +254,9 @@ public class MainActivity extends AppCompatActivity{
                 long timestamp = System.currentTimeMillis();
                 database.child("readings").child(String.valueOf(timestamp)).setValue(moistureInt);
 
-                // Keep only latest 10 readings
+                // Read readings from firebase
                 database.child("readings").get().addOnSuccessListener(readingsSnapshot -> {
-                    // count all children
+                    // Count how many children in snapshot
                     long count = readingsSnapshot.getChildrenCount();
                     // run through each child
                     for (DataSnapshot child : readingsSnapshot.getChildren()) {
