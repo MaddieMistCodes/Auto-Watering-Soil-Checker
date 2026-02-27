@@ -1,6 +1,9 @@
 package com.example.example2;
 // Package declaration - this file belongs to com.example.example2
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 // Bundle is used to save/restore activity state
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +20,9 @@ import android.widget.Toast;
 
 // Handler and Work imports
 import android.os.Handler;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.ExistingPeriodicWorkPolicy;
@@ -71,6 +77,7 @@ public class MainActivity extends AppCompatActivity{
         setUpBottomNavigation();
         setUpButtonListeners();
         updateReadingCount();
+        createNotificationChannel();
 
 
         /*
@@ -250,6 +257,12 @@ public class MainActivity extends AppCompatActivity{
                 //DataManager.getInstance().addReading(moistureInt);
                 //updateReadingCount();
 
+                // ← added notification check
+                int threshold = prefs.getInt("threshold", 30);
+                if(moistureInt < threshold){
+                    sendNotification(moistureInt);
+                }
+
                 // Save reading with timestamp to Firebase
                 long timestamp = System.currentTimeMillis();
                 database.child("readings").child(String.valueOf(timestamp)).setValue(moistureInt);
@@ -275,5 +288,44 @@ public class MainActivity extends AppCompatActivity{
         }).addOnFailureListener(e -> {
             Toast.makeText(this, "Failed to read data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         });
+    }
+
+    private void createNotificationChannel(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel(
+                    "moisture_channel",
+                    "Moisture_Alerts",
+                    NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription("Alerts when moisture drops below a certain threshold");
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+    }
+    private void sendNotification(int moisture){
+        SharedPreferences prefs = getSharedPreferences("MyApp", MODE_PRIVATE);
+        boolean notificationsEnabled = prefs.getBoolean("notificationsEnabled", false);
+
+        if(!notificationsEnabled) return;
+
+        // Check permission for Android 13+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            if(checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
+                    != android.content.pm.PackageManager.PERMISSION_GRANTED){
+                // Permission not granted, request it
+                requestPermissions(
+                        new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1);
+                return;
+            }
+        }
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "moisture_channel")
+                .setSmallIcon(android.R.drawable.ic_dialog_alert)
+                .setContentTitle("Low Moisture Alert")
+                .setContentText("Moisture is at " + moisture + "%, water the plant!")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat manager = NotificationManagerCompat.from(this);
+        manager.notify(1, builder.build());
+
     }
 }
