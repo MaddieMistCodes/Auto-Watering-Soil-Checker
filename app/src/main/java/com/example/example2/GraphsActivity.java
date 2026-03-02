@@ -63,13 +63,20 @@ public class GraphsActivity extends AppCompatActivity {
     }
     private void loadCharts(){
         DatabaseReference database = FirebaseDatabase.getInstance().getReference("sensor/readings");
-        database.get().addOnSuccessListener(snapshot -> {
+        // orderByKey sorts by timestamps
+        // limitToLast takes 10 latest readings
+        database.orderByKey().limitToLast(10).get().addOnSuccessListener(snapshot -> {
             List<SensorReading> readings = new ArrayList<>();
-
+            // Check if node is there
             if(snapshot.exists()){
+                // Snapshot represents the entire readings
                 for(DataSnapshot child : snapshot.getChildren()){
+                    // Gets timestamp
                     long timestamp = Long.parseLong(child.getKey());
+                    // Gets actual moisture value
                     int value = child.getValue(Integer.class);
+                    // Value and time added into the SensorReading array
+                    // This dynamic array holds data for the graphs
                     readings.add(new SensorReading(value, timestamp));
                 }
             }

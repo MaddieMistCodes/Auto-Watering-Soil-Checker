@@ -257,7 +257,7 @@ public class MainActivity extends AppCompatActivity{
                 //DataManager.getInstance().addReading(moistureInt);
                 //updateReadingCount();
 
-                // ← added notification check
+                // added notification check
                 int threshold = prefs.getInt("threshold", 30);
                 if(moistureInt < threshold){
                     sendNotification(moistureInt);
@@ -273,10 +273,8 @@ public class MainActivity extends AppCompatActivity{
                     long count = readingsSnapshot.getChildrenCount();
                     // run through each child
                     for (DataSnapshot child : readingsSnapshot.getChildren()) {
-                        // Ensures only 10 readings on app by looping
-                        if (count <= 10) break;
+                        if (count <= 100) break;  // Changed from 10 to 100 saved on FB
                         child.getRef().removeValue();
-                        // Reduce child count by one until 10 or less
                         count--;
                     }
                 });
