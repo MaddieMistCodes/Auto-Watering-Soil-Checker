@@ -21,14 +21,16 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="24dp"
+        android:background="#F8DFE6">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Settings"
             android:textSize="32sp"
-            android:textColor="#1A5276"
+            android:textColor="#97284D"
+            android:paddingTop="16dp"
             android:textStyle="bold"
             android:layout_marginBottom="32dp"/>
 
@@ -37,7 +39,8 @@
             android:layout_height="wrap_content"
             android:text="Automation"
             android:textSize="18sp"
-            android:textColor="#1A5276"
+            android:textStyle="bold"
+            android:textColor="#9D385D"
             android:layout_marginBottom="16dp"/>
 
         <!-- automation toggle card -->
@@ -93,7 +96,7 @@
             android:layout_height="wrap_content"
             android:text="Notifications"
             android:textSize="18sp"
-            android:textColor="#1A5276"
+            android:textColor="#9D385D"
             android:textStyle="bold"
             android:layout_marginBottom="16dp"
             android:layout_marginTop="16dp"/>
@@ -188,7 +191,7 @@
             android:layout_height="wrap_content"
             android:text="Save Settings"
             android:textSize="16sp"
-            android:backgroundTint="#27AE60"
+            android:backgroundTint="#FD5493"
             android:textColor="#FFFFFF"
             android:padding="16dp"/>
 
@@ -208,7 +211,7 @@
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="@drawable/bg_bottom_nav"
         app:menu="@menu/bottom_nav_menu"
         app:itemIconTint="@color/nav_item_colour"
         app:itemTextColor="@color/nav_item_colour"

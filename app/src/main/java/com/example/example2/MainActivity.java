@@ -18,9 +18,6 @@ import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.Toast;
 
-// Handler and Work imports
-import android.os.Handler;
-
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.work.PeriodicWorkRequest;
@@ -42,7 +39,7 @@ public class MainActivity extends AppCompatActivity{
     // Members - accessible through the class
     private TextView tvSensorValue;
     private TextView tvSensorStatus;
-    private EditText etTestValue;
+    //private EditText etTestValue;
     private Button btnUpdate;
     private TextView tvReadingCount;
 
@@ -78,35 +75,19 @@ public class MainActivity extends AppCompatActivity{
         setUpButtonListeners();
         updateReadingCount();
         createNotificationChannel();
+        scheduleHourlyMoistureCheck();
 
-
-        /*
-        // NEW FUNCTIONALITY
-        // Handler allows new value read every time user opens app
-        // Work Manager allows background check of values to allow constant readings on graphs
-
-        Handler handler = new Handler();
-        Runnable hourlyCheck = new Runnable() {
-            @Override
-            public void run() {
-                readFirebaseData();
-                handler.postDelayed(this, 60 * 60 * 1000);
-            }
-        };
-        handler.post(hourlyCheck);
-
-        // WorkManager - runs in background when app is closed
+    }
+    private void scheduleHourlyMoistureCheck() {
         PeriodicWorkRequest moistureCheck = new PeriodicWorkRequest.Builder(
+                // Determines how often moisturecheck is called
                 MoistureCheckWorker.class,
                 1, TimeUnit.HOURS)
                 .build();
-
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
                 "moistureCheck",
                 ExistingPeriodicWorkPolicy.KEEP,
                 moistureCheck);
-
-         */
     }
     protected void onResume() {
         super.onResume();
@@ -167,7 +148,7 @@ public class MainActivity extends AppCompatActivity{
     private void initialiseViews(){
         tvSensorStatus = findViewById(R.id.tvSensorStatus);
         tvSensorValue = findViewById(R.id.tvSensorValue);
-        etTestValue =findViewById(R.id.etTestValue);
+        //etTestValue =findViewById(R.id.etTestValue);
         btnUpdate = findViewById(R.id.btnUpdate);
         tvReadingCount = findViewById(R.id.tvReadingCount);
     }

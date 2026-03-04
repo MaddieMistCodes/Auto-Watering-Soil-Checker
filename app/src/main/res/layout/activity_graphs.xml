@@ -18,14 +18,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:background="#F8DFE6">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Data Visualisation"
+                android:paddingTop="20dp"
                 android:textSize="28sp"
-                android:textColor="#1A5276"
+                android:textColor="#97284D"
                 android:textStyle="bold"/>
 
             <TextView
@@ -34,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:text="No data yet - add readings on Home Screen"
                 android:textSize="14sp"
-                android:textColor="#7F8C8D"
+                android:textColor="#B4154A"
                 android:layout_marginBottom="16dp"/>
 
             <androidx.cardview.widget.CardView
@@ -56,7 +58,7 @@
                         android:layout_height="wrap_content"
                         android:text="Line Chart - Trend Over Time"
                         android:textSize="16sp"
-                        android:textColor="#F06292"
+                        android:textColor="#9D385D"
                         android:textStyle="bold"
                         android:layout_marginBottom="8dp"/>
 
@@ -88,7 +90,7 @@
                         android:layout_height="wrap_content"
                         android:text="Bar Chart - Recent Values"
                         android:textSize="16sp"
-                        android:textColor="#F06292"
+                        android:textColor="#9D385D"
                         android:textStyle="bold"
                         android:layout_marginBottom="8dp"/>
 
@@ -119,7 +121,7 @@
                         android:layout_height="wrap_content"
                         android:text="Pie Chart - Distribution"
                         android:textSize="16sp"
-                        android:textColor="#F06292"
+                        android:textColor="#9D385D"
                         android:textStyle="bold"
                         android:layout_marginBottom="8dp"/>
 
@@ -138,7 +140,7 @@
 android:id="@+id/bottomNavigation"
 android:layout_width="match_parent"
 android:layout_height="wrap_content"
-android:background="#FFFFFF"
+android:background="@drawable/bg_bottom_nav"
 app:menu="@menu/bottom_nav_menu"
 app:itemIconTint="@color/nav_item_colour"
 app:itemTextColor="@color/nav_item_colour"

@@ -39,7 +39,8 @@ android:background="#FFFFFF" - White background (hex colour)
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="24dp"
+            android:background="#F8DFE6">
 
             <!--
             TextView displays text on screen
@@ -56,9 +57,10 @@ android:background="#FFFFFF" - White background (hex colour)
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Welcome to example 1"
+                android:paddingTop="16dp"
+                android:text="🌷Plant Soil Mositure🌷"
                 android:textSize="32sp"
-                android:textColor="#1A5276"
+                android:textColor="#97284D"
                 android:textStyle="bold"/>
 
             <!--
@@ -71,9 +73,9 @@ android:background="#FFFFFF" - White background (hex colour)
                 android:id="@+id/tvSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="IoT Sensor Dashboard"
+                android:text="   Plant Dashboard"
                 android:textSize="16sp"
-                android:textColor="#566573"
+                android:textColor="#9D385D"
                 android:layout_marginBottom="32dp"/>
 
             <!-- sensor value card -->
@@ -91,14 +93,15 @@ android:background="#FFFFFF" - White background (hex colour)
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="20dp"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:background="#FBD4DE">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Current Sensor Value"
                         android:textSize="14sp"
-                        android:textColor="#483D8B"
+                        android:textColor="#B4154A"
                         android:layout_marginBottom="8dp"/>
 
                     <TextView
@@ -123,7 +126,7 @@ android:background="#FFFFFF" - White background (hex colour)
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Readings Saved: 0"
-                        android:textColor="#95A5A6"
+                        android:textColor="#92133A"
                         android:textSize="12sp"
                         android:layout_marginTop="12dp"/>
 
@@ -131,44 +134,23 @@ android:background="#FFFFFF" - White background (hex colour)
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Test Input"
-                android:textSize="18sp"
-                android:textColor="#483D8B"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp"/>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <!-- horizontal = children stay side by side -->
 
-                <EditText
-                    android:id="@+id/etTestValue"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="Enter value (0-100)"
-                    android:inputType="number"
-                    android:padding="16dp"
-                    android:background="@drawable/edit_text_background"
-                    android:textColor="#2C3E50"
-                    android:textColorHint="#95A5A6"/>
-
                 <!-- edit text = input field, android:hint is placeholder text, android:inputType - only numbers -->
 
                 <Button
                     android:id="@+id/btnUpdate"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:backgroundTint="#FA4A80"
+                    android:padding="16dp"
                     android:text="Update"
-                    android:layout_marginStart="12dp"
-                    android:backgroundTint="#1A5276"
-                    android:textColor="#FFFFFF"
-                    android:padding="16dp"/>
+                    android:textColor="#FFFFFF" />
 
             </LinearLayout>
 
@@ -180,11 +162,12 @@ android:background="#FFFFFF" - White background (hex colour)
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="@drawable/bg_bottom_nav"
         app:menu="@menu/bottom_nav_menu"
         app:itemIconTint="@color/nav_item_colour"
         app:itemTextColor="@color/nav_item_colour"
-        app:labelVisibilityMode="labeled"/>
+        app:labelVisibilityMode="labeled"
+        android:elevation="8dp"/>
 
     <!--
     app:menu="@menu/bottom_nav_menu" - links to our menu file
