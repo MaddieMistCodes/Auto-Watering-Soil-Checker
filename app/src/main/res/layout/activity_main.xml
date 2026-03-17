@@ -94,7 +94,7 @@ android:background="#FFFFFF" - White background (hex colour)
                     android:orientation="vertical"
                     android:padding="20dp"
                     android:gravity="center"
-                    android:background="#FBD4DE">
+                    android:background="#FBC7D1">
 
                     <TextView
                         android:layout_width="wrap_content"

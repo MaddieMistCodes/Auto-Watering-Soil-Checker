@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 // Bundle is used to save/restore activity state
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 // App compact activity is the base class for activities
 // Provides backwards compatible features
@@ -26,10 +27,12 @@ import androidx.work.ExistingPeriodicWorkPolicy;
 import java.util.concurrent.TimeUnit;
 
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.ValueEventListener;
 
 // Intent used to navigate through activities
 public class MainActivity extends AppCompatActivity{
@@ -71,6 +74,10 @@ public class MainActivity extends AppCompatActivity{
         // R.layout.activity_main refers to res/layout/activity_main.xml
         initialiseViews();
         database = FirebaseDatabase.getInstance().getReference("sensor");
+
+        // Testing method to ensure appropriate value appears to reader once app opens
+        startRealtimeUpdates();
+
         setUpBottomNavigation();
         setUpButtonListeners();
         updateReadingCount();
@@ -194,18 +201,23 @@ public class MainActivity extends AppCompatActivity{
     private void updateValueColour(int value){
         if(value < THRESHOLD_LOW){
             tvSensorValue.setTextColor(COLOR_RED);
-            //tvSensorValue.setText("Low");
+            tvSensorStatus.setText("Status: Dry 🥀");
+            tvSensorStatus.setTextColor(COLOR_RED);
         }
         else if(value <= THRESHOLD_HIGH){
             tvSensorValue.setTextColor(COLOR_YELLOW);
-            //tvSensorValue.setText("Medium");
+            tvSensorStatus.setText("Status: Okay");
+            tvSensorStatus.setTextColor(COLOR_YELLOW);
         }
         else if(value <= THRESHOLD_TOO_HIGH){
             tvSensorValue.setTextColor(COLOR_GREEN);
-            //tvSensorValue.setText("High");
+            tvSensorStatus.setText("Status: Perfect 🌸");
+            tvSensorStatus.setTextColor(COLOR_GREEN);
         }
         else{
             tvSensorValue.setTextColor(COLOR_BLUE);
+            tvSensorStatus.setText("Status: Very Wet");
+            tvSensorStatus.setTextColor(COLOR_BLUE);
         }
     }
     // Redundant with firebase data
@@ -306,5 +318,27 @@ public class MainActivity extends AppCompatActivity{
         NotificationManagerCompat manager = NotificationManagerCompat.from(this);
         manager.notify(1, builder.build());
 
+    }
+    private void startRealtimeUpdates() {
+        database.child("moisture").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    int moistureInt = Integer.parseInt(snapshot.getValue().toString());
+
+                    // Update the UI immediately when Firebase changes
+                    tvSensorValue.setText(String.valueOf(moistureInt));
+                    updateValueColour(moistureInt);
+
+                    // Save to prefs so it's there on next app launch
+                    getSharedPreferences("MyApp", MODE_PRIVATE)
+                            .edit().putInt("lastReading", moistureInt).apply();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
     }
 }
