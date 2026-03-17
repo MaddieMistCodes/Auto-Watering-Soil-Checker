@@ -102,7 +102,7 @@
                                               <map>
                                                 <entry key="color" value="000000" />
                                                 <entry key="imagePath" value="C:\Users\17mad\Downloads\HomePlantIcon.png" />
-                                                <entry key="scalingPercent" value="55" />
+                                                <entry key="scalingPercent" value="48" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -134,7 +134,8 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="outputName" value="ic_home_icon" />
+                                      <entry key="backgroundAssetType" value="COLOR" />
+                                      <entry key="backgroundColor" value="ffe9fb" />
                                     </map>
                                   </option>
                                 </PersistentState>
