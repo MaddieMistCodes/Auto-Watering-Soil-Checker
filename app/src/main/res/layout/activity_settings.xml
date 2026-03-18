@@ -32,7 +32,7 @@
             android:textColor="#97284D"
             android:paddingTop="16dp"
             android:textStyle="bold"
-            android:layout_marginBottom="32dp"/>
+            android:layout_marginBottom="25dp"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -183,6 +183,57 @@
             </LinearLayout>
     </androidx.cardview.widget.CardView>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Export Data"
+            android:textSize="18sp"
+            android:textColor="#9D385D"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"/>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="#F8F9FA">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Export Readings"
+                android:textSize="16sp"
+                android:textColor="#2C3E50"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Download the last 100 readings as a CSV file"
+                android:textSize="12sp"
+                android:textColor="#7F8C8D"
+                android:layout_marginBottom="12dp"/>
+
+            <Button
+                android:id="@+id/btnExportCSV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="✨Export CSV✨"
+                android:backgroundTint="#FD6FA8"
+                android:textColor="#FFFFFF"
+                android:padding="12dp"/>
+
+        </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
         <!-- save button -->
 
         <Button
@@ -204,6 +255,8 @@
             android:text=""
             android:textSize="14sp"
             android:textColor="#27AE60"/>
+
+
     </LinearLayout>
     </ScrollView>
 
