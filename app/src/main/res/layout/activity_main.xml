@@ -149,10 +149,21 @@ android:background="#FFFFFF" - White background (hex colour)
                     android:layout_gravity="center"
                     android:backgroundTint="#FA4A80"
                     android:padding="16dp"
-                    android:text="Update"
+                    android:text="💃Update💃"
                     android:textColor="#FFFFFF" />
 
             </LinearLayout>
+
+            <!-- Plant Character -->
+            <ImageView
+                android:id="@+id/ivPlantCharacter"
+                android:layout_width="350dp"
+                android:layout_height="350dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="40dp"
+                android:src="@drawable/happy_plant_1"
+                android:scaleType="fitCenter"
+                android:contentDescription="Plant Character"/>
 
         </LinearLayout>
     </ScrollView>
