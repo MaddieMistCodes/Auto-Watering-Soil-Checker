@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -33,6 +34,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.ValueEventListener;
+
+import android.graphics.drawable.AnimationDrawable;
 
 // Intent used to navigate through activities
 public class MainActivity extends AppCompatActivity{
@@ -168,57 +171,41 @@ public class MainActivity extends AppCompatActivity{
             }
         });
     }
-    // Redundant with firebase data
-    /*private void updateSensorValue(){
-        String inputText = etTestValue.getText().toString().trim();
-        if(inputText.isEmpty()){
-            Toast.makeText(this, "Please enter a value", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        try{
-            int value = Integer.parseInt(inputText);
-
-            if(value < 0 || value > 100){
-                Toast.makeText(this, "Please enter a value between 0 and 100", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            DataManager.getInstance().addReading(value);
-            tvSensorValue.setText(String.valueOf(value));
-            updateValueColour(value);
-            //updateReadingCount();
-            etTestValue.setText("");
-
-            int count = DataManager.getInstance().getReadingCount();
-            Toast.makeText(this, "Saved! Total readings: " + count,Toast.LENGTH_SHORT).show();
-
-
-        }
-        catch(NumberFormatException e){
-            // Runs if parse int fails
-            Toast.makeText(this, "Please enter a valid number", Toast.LENGTH_SHORT).show();
-        }
-    }*/
     private void updateValueColour(int value){
+
+        ImageView ivPlantCharacter = findViewById(R.id.ivPlantCharacter);
+        int animRes;
+
         if(value < THRESHOLD_LOW){
             tvSensorValue.setTextColor(COLOR_RED);
             tvSensorStatus.setText("Status: Dry 🥀");
             tvSensorStatus.setTextColor(COLOR_RED);
+            animRes = R.drawable.anim_plant_dehydrated;
         }
         else if(value <= THRESHOLD_HIGH){
             tvSensorValue.setTextColor(COLOR_YELLOW);
             tvSensorStatus.setText("Status: Okay");
             tvSensorStatus.setTextColor(COLOR_YELLOW);
+            animRes = R.drawable.anim_plant_ok;
         }
         else if(value <= THRESHOLD_TOO_HIGH){
             tvSensorValue.setTextColor(COLOR_GREEN);
             tvSensorStatus.setText("Status: Perfect 🌸");
             tvSensorStatus.setTextColor(COLOR_GREEN);
+            animRes = R.drawable.anim_plant_happy;
         }
         else{
             tvSensorValue.setTextColor(COLOR_BLUE);
             tvSensorStatus.setText("Status: Very Wet");
             tvSensorStatus.setTextColor(COLOR_BLUE);
+            animRes = R.drawable.anim_plant_uncomfortable;
         }
+        // Load the appropriate xml
+        ivPlantCharacter.setImageResource(animRes);
+        // Grab the loaded drawable and cast it into an animation object to access methods
+        AnimationDrawable anim = (AnimationDrawable) ivPlantCharacter.getDrawable();
+        // Tells animation to cycle between frames in xml
+        anim.start();
     }
     // Redundant with firebase data
     private void updateReadingCount(){
@@ -319,6 +306,7 @@ public class MainActivity extends AppCompatActivity{
         manager.notify(1, builder.build());
 
     }
+    // Real time updates on tv Sensor value
     private void startRealtimeUpdates() {
         database.child("moisture").addValueEventListener(new ValueEventListener() {
             @Override
@@ -328,6 +316,7 @@ public class MainActivity extends AppCompatActivity{
 
                     // Update the UI immediately when Firebase changes
                     tvSensorValue.setText(String.valueOf(moistureInt));
+                    // Update according to parameters
                     updateValueColour(moistureInt);
 
                     // Save to prefs so it's there on next app launch
