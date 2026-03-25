@@ -37,6 +37,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import android.graphics.drawable.AnimationDrawable;
 
+// Imports for plant puns
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import java.util.Random;
+
 // Intent used to navigate through activities
 public class MainActivity extends AppCompatActivity{
     // MainActivity is the main screen of our app
@@ -48,6 +52,7 @@ public class MainActivity extends AppCompatActivity{
     //private EditText etTestValue;
     private Button btnUpdate;
     private TextView tvReadingCount;
+    private ImageView ivPlantCharacter;
 
     // Colour constants
     // Converting hex colour to integer
@@ -83,6 +88,7 @@ public class MainActivity extends AppCompatActivity{
 
         setUpBottomNavigation();
         setUpButtonListeners();
+        setUpPlantPunListener();
         updateReadingCount();
         createNotificationChannel();
         scheduleHourlyMoistureCheck();
@@ -92,7 +98,7 @@ public class MainActivity extends AppCompatActivity{
         PeriodicWorkRequest moistureCheck = new PeriodicWorkRequest.Builder(
                 // Determines how often moisturecheck is called
                 MoistureCheckWorker.class,
-                1, TimeUnit.HOURS)
+                2, TimeUnit.HOURS)
                 .build();
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
                 "moistureCheck",
@@ -158,9 +164,9 @@ public class MainActivity extends AppCompatActivity{
     private void initialiseViews(){
         tvSensorStatus = findViewById(R.id.tvSensorStatus);
         tvSensorValue = findViewById(R.id.tvSensorValue);
-        //etTestValue =findViewById(R.id.etTestValue);
         btnUpdate = findViewById(R.id.btnUpdate);
         tvReadingCount = findViewById(R.id.tvReadingCount);
+        ivPlantCharacter = findViewById(R.id.ivPlantCharacter);
     }
     private void setUpButtonListeners(){
         btnUpdate.setOnClickListener(new View.OnClickListener() {
@@ -172,8 +178,6 @@ public class MainActivity extends AppCompatActivity{
         });
     }
     private void updateValueColour(int value){
-
-        ImageView ivPlantCharacter = findViewById(R.id.ivPlantCharacter);
         int animRes;
 
         if(value < THRESHOLD_LOW){
@@ -328,6 +332,31 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
             }
+        });
+    }
+    private void setUpPlantPunListener(){
+        String puns[] = {
+                "I'm rooting for you! 🌱",
+                "You grow girl! 🌿",
+                "I'm so frond of you! 🌿",
+                "Aloe you vera much! 🪴",
+                "I be-leaf in you! 🍃",
+                "Thistle be a great day! 🌸",
+                "I'm so glad we grew together! 🌱",
+                "Soil mate! 🌍",
+                "You have lots of thyme!✨",
+                "You look radishing! 🌸",
+                "Nothing to seed here 🙈, you grow girl!"
+        };
+        ivPlantCharacter.setOnClickListener(v -> {
+            Random random = new Random();
+            String pun = puns[random.nextInt(puns.length)];
+
+            new MaterialAlertDialogBuilder(this).
+                    setTitle("🌷 Your Plant Says...")
+                    .setMessage(pun)
+                    .setPositiveButton("Thanks! 🌸", null)
+                    .show();
         });
     }
 }

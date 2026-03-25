@@ -210,6 +210,6 @@ public class SettingsActivity extends AppCompatActivity {
     private void resetExportButton() {
         // Method to re-enable the button, so user can press again
         btnExportCSV.setEnabled(true);
-        btnExportCSV.setText("Export CSV");
+        btnExportCSV.setText("✨Export CSV✨");
     }
 }
