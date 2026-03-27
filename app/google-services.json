@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "1079059854895",
+    "firebase_url": "https://esp32moisturesensor-bba16-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "esp32moisturesensor-bba16",
+    "storage_bucket": "esp32moisturesensor-bba16.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079059854895:android:3b0fa498826a5aa65138da",
+        "android_client_info": {
+          "package_name": "com.example.esp32soilmoisture"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDK-yaWjF97236H6-n5a4x_NVEflAGwAw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079059854895:android:95c0e3c4b71ea4c85138da",
+        "android_client_info": {
+          "package_name": "com.example.esp32soilsensor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDK-yaWjF97236H6-n5a4x_NVEflAGwAw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079059854895:android:32623a82ec0636f65138da",
+        "android_client_info": {
+          "package_name": "com.example.example2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDK-yaWjF97236H6-n5a4x_NVEflAGwAw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

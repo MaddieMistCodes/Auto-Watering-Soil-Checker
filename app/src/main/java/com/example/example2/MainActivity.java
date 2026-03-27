@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity{
     private Button btnUpdate;
     private TextView tvReadingCount;
     private ImageView ivPlantCharacter;
+    // the - stores the latest reading
+    private int currentMoisture = -1;
 
     // Colour constants
     // Converting hex colour to integer
@@ -222,7 +224,7 @@ public class MainActivity extends AppCompatActivity{
         });
     }
     private void readFirebaseData() {
-        // Go to firebase and fine moisture node, read once. If succesful, store in snapshot
+        // Go to firebase and find moisture node, read once. If succesful, store in snapshot
         database.child("moisture").get().addOnSuccessListener(snapshot -> {
             // If data is there
             if (snapshot.exists()) {
@@ -331,7 +333,7 @@ public class MainActivity extends AppCompatActivity{
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     int moistureInt = Integer.parseInt(snapshot.getValue().toString());
-
+                    currentMoisture = moistureInt;
                     // Update the UI immediately when Firebase changes
                     tvSensorValue.setText(String.valueOf(moistureInt));
                     // Update according to parameters
@@ -349,7 +351,8 @@ public class MainActivity extends AppCompatActivity{
         });
     }
     private void setUpPlantPunListener(){
-        String puns[] = {
+
+        String happyPuns[] = {
                 "I'm rooting for you! 🌱",
                 "You grow girl! 🌿",
                 "I'm so frond of you! 🌿",
@@ -362,15 +365,43 @@ public class MainActivity extends AppCompatActivity{
                 "You look radishing! 🌸",
                 "Nothing to seed here 🙈, you grow girl!"
         };
+
+        String sadPuns[] = {
+                "I'm feeling a bit dry today...🥀",
+                "Is anyone there!? I'm parched 🌵",
+                "Water you waiting for?💧",
+                "So no water again? No it's cool i'm not upset🥺",
+                "Aloeee, can you hear me?🥀",
+                "I'm wilting away!🥺",
+                "Don't worry I'm fine (I am NOT fine😭)",
+        };
+
         ivPlantCharacter.setOnClickListener(v -> {
             Random random = new Random();
-            String pun = puns[random.nextInt(puns.length)];
+            String pun;
 
+            if(currentMoisture < THRESHOLD_LOW){
+                pun = sadPuns[random.nextInt(sadPuns.length)];
+            }
+            else{
+                pun = happyPuns[random.nextInt(happyPuns.length)];
+            }
+
+            // Customise response based on the moisture level
+            if(currentMoisture > THRESHOLD_LOW){
             new MaterialAlertDialogBuilder(this).
                     setTitle("🌷 Your Plant Says...")
                     .setMessage(pun)
                     .setPositiveButton("Thanks! 🌸", null)
-                    .show();
+                    .show(); }
+            else{
+                new MaterialAlertDialogBuilder(this).
+                        setTitle("🥀 Your Plant Says...")
+                        .setMessage(pun)
+                        .setPositiveButton("Sorry! 🙈", null)
+                        .show();
+            }
         });
+
     }
 }
