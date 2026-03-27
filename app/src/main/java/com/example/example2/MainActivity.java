@@ -242,10 +242,10 @@ public class MainActivity extends AppCompatActivity{
                 //updateReadingCount();
 
                 // added notification check
-                int threshold = prefs.getInt("threshold", 30);
-                if(moistureInt < threshold){
+                //int threshold = prefs.getInt("threshold", 30);
+                //if(moistureInt < threshold){
                     sendNotification(moistureInt);
-                }
+                //}
 
                 // Save reading with timestamp to Firebase
                 long timestamp = System.currentTimeMillis();
@@ -299,15 +299,29 @@ public class MainActivity extends AppCompatActivity{
                 return;
             }
         }
+        if(moisture <= THRESHOLD_HIGH && moisture > THRESHOLD_LOW){
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "moisture_channel")
-                .setSmallIcon(android.R.drawable.ic_dialog_alert)
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setContentTitle("Low Moisture Alert")
-                .setContentText("Moisture is at " + moisture + "%, water the plant!")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentText("Moisture is at " + moisture + "%, water the plant soon.")
+                .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setAutoCancel(true);
 
         NotificationManagerCompat manager = NotificationManagerCompat.from(this);
-        manager.notify(1, builder.build());
+        manager.notify(1, builder.build());}
+
+        if(moisture < THRESHOLD_LOW){
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "moisture_channel")
+                    .setSmallIcon(android.R.drawable.ic_dialog_alert)
+                    .setContentTitle("Low Moisture Alert")
+                    .setContentText("Moisture is at " + moisture + "%, water the plant!")
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setAutoCancel(true);
+
+            NotificationManagerCompat manager = NotificationManagerCompat.from(this);
+            // Different id's, so both can appear
+            manager.notify(2, builder.build());
+        }
 
     }
     // Real time updates on tv Sensor value
