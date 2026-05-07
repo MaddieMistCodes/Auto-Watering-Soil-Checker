@@ -27,9 +27,10 @@ public class MoistureCheckWorker extends Worker {
     public Result doWork() {
         // Create notification channel
         createNotificationChannel();
-
+        // Allows one or more threads to wait until a set of operations being performed in other threads completes.
         CountDownLatch latch = new CountDownLatch(1);
 
+        // Get firebase reading in background
         FirebaseDatabase.getInstance().getReference("sensor")
                 .child("moisture").get().addOnSuccessListener(snapshot -> {
                     if (snapshot.exists()) {
@@ -43,6 +44,7 @@ public class MoistureCheckWorker extends Worker {
                                 .child(String.valueOf(timestamp))
                                 .setValue(moistureInt);
 
+                        /*
                         // Keep only 100 readings, delete oldest if over
                         FirebaseDatabase.getInstance().getReference("sensor/readings")
                                 .get().addOnSuccessListener(readingsSnapshot -> {
@@ -53,9 +55,10 @@ public class MoistureCheckWorker extends Worker {
                                         count--;
                                     }
                                     latch.countDown();
-                                }).addOnFailureListener(e -> latch.countDown());
+                                }).addOnFailureListener(e -> latch.countDown()); */
 
-                        // Check SharedPreferences for notification settings
+                        // Check SharedPreferences for notification settings - has no access to the UI
+                        // So must know if can send notifications
                         SharedPreferences prefs = getApplicationContext()
                                 .getSharedPreferences("MyApp", Context.MODE_PRIVATE);
                         boolean notificationsEnabled = prefs.getBoolean("notificationsEnabled", false);

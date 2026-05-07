@@ -1,18 +1,27 @@
-package com.example.example2;
 // Package declaration - this file belongs to com.example.example2
+package com.example.example2;
+// Creates a category for your notifications
 import android.app.NotificationChannel;
+// The system service that manages and displays notifications
 import android.app.NotificationManager;
+// Simple key-value storage for saving small bits of data
 import android.content.SharedPreferences;
+// Lets you check what Android version the device is running
 import android.os.Build;
+// A container for passing data between activities or saving state
 import android.os.Bundle;
-// Bundle is used to save/restore activity state
+
+// An annotation that marks a parameter as never being null
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 // App compact activity is the base class for activities
 // Provides backwards compatible features
+import androidx.appcompat.app.AppCompatActivity;
+
+// Used to navigate between activities
 import android.content.Intent;
 
 import android.graphics.Color;
+//The base class for all UI elements
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -20,24 +29,36 @@ import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+// Builds notifications in a backwards compatible way
 import androidx.core.app.NotificationCompat;
+// Sends notifications in a backwards compatible way
 import androidx.core.app.NotificationManagerCompat;
+
+// Schedules a task to run repeatedly
 import androidx.work.PeriodicWorkRequest;
+// Manages and runs your background tasks reliably
 import androidx.work.WorkManager;
+// Controls what happens if you schedule a task that already exists
 import androidx.work.ExistingPeriodicWorkPolicy;
 import java.util.concurrent.TimeUnit;
 
+// A snapshot of data read from Firebase at a point in time
 import com.google.firebase.database.DataSnapshot;
+// Represents an error that occurred when reading Firebase
 import com.google.firebase.database.DatabaseError;
+// A reference/pointer to a specific location in your Firebase database
 import com.google.firebase.database.DatabaseReference;
+// The entry point for accessing Firebase Realtime Database
 import com.google.firebase.database.FirebaseDatabase;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+// The bottom navigation bar with tabs
 import com.google.firebase.database.ValueEventListener;
 
+// The bottom navigation bar with tabs
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+// Lets you play frame-by-frame animations on an ImageView
 import android.graphics.drawable.AnimationDrawable;
 
-// Imports for plant puns
+// Creates stylish Material Design popup dialogs for plant puns
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.Random;
 
@@ -49,12 +70,13 @@ public class MainActivity extends AppCompatActivity{
     // Members - accessible through the class
     private TextView tvSensorValue;
     private TextView tvSensorStatus;
-    //private EditText etTestValue;
     private Button btnUpdate;
     private TextView tvReadingCount;
     private ImageView ivPlantCharacter;
-    // the - stores the latest reading
+    private Button btnWater;
+
     private int currentMoisture = -1;
+    // Stores the latest reading
 
     // Colour constants
     // Converting hex colour to integer
@@ -64,9 +86,13 @@ public class MainActivity extends AppCompatActivity{
     private static final int COLOR_BLUE = Color.parseColor("#4ECDC4");
 
     // Threshold Constants
-    private static final int THRESHOLD_LOW = 30;
-    private static final int THRESHOLD_HIGH = 65;
-    private static final int THRESHOLD_TOO_HIGH = 85;
+    public static final int THRESHOLD_LOW = 30;
+    public static final int THRESHOLD_HIGH = 65;
+    public static final int THRESHOLD_TOO_HIGH = 85;
+
+    // private boolean lastPumpState = false;
+    private boolean autoTriggerActive = false;
+    private boolean manualOverride = false;
 
     // Firebase reference
     private DatabaseReference database;
@@ -85,7 +111,7 @@ public class MainActivity extends AppCompatActivity{
         initialiseViews();
         database = FirebaseDatabase.getInstance().getReference("sensor");
 
-        // Testing method to ensure appropriate value appears to reader once app opens
+        // Method to ensure appropriate value appears to reader once app opens
         startRealtimeUpdates();
 
         setUpBottomNavigation();
@@ -97,23 +123,26 @@ public class MainActivity extends AppCompatActivity{
 
     }
     private void scheduleHourlyMoistureCheck() {
+        // Control when worker method is called
         PeriodicWorkRequest moistureCheck = new PeriodicWorkRequest.Builder(
                 // Determines how often moisturecheck is called
                 MoistureCheckWorker.class,
                 2, TimeUnit.HOURS)
                 .build();
+        // Method allows you to enqueue a uniquely-named PeriodicWorkRequest
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
                 "moistureCheck",
+                // If existing work, do nothing
                 ExistingPeriodicWorkPolicy.KEEP,
                 moistureCheck);
     }
+    // Runs every time the app comes back to the foreground i.e when device wakes from sleep
     protected void onResume() {
         super.onResume();
-        //updateReadingCount();
-        //readFirebaseData();
+        // Ensure always latest reading when resuming the app
         SharedPreferences prefs = getSharedPreferences("MyApp", MODE_PRIVATE);
         int lastReading = prefs.getInt("lastReading", -1);
-        // only restore if real reading, avoids -1 being displayed on initial set up
+        // Only restore if real reading, avoids -1 being displayed on initial set up
         if (lastReading != -1) {
             tvSensorValue.setText(String.valueOf(lastReading));
             updateValueColour(lastReading);
@@ -167,6 +196,7 @@ public class MainActivity extends AppCompatActivity{
         tvSensorStatus = findViewById(R.id.tvSensorStatus);
         tvSensorValue = findViewById(R.id.tvSensorValue);
         btnUpdate = findViewById(R.id.btnUpdate);
+        btnWater = findViewById(R.id.btnWater);
         tvReadingCount = findViewById(R.id.tvReadingCount);
         ivPlantCharacter = findViewById(R.id.ivPlantCharacter);
     }
@@ -177,6 +207,28 @@ public class MainActivity extends AppCompatActivity{
             public void onClick(View v) {
                 readFirebaseData();
             }
+        });
+        // Manual Watering
+        btnWater.setOnClickListener(v -> {
+            manualOverride = true; // Prevents auto-logic from interfering
+
+            // Turn ON
+            database.child("pump").setValue(true).addOnSuccessListener(aVoid -> {
+                Toast.makeText(this, "Manual watering started 💧", Toast.LENGTH_SHORT).show();
+
+                // Wait 2 seconds (longer than ESP32 check time)
+                new android.os.Handler().postDelayed(() -> {
+                    // Turn OFF
+                    database.child("pump").setValue(false);
+
+                    // Release override after a small buffer
+                    new android.os.Handler().postDelayed(() -> {
+                        manualOverride = false;
+                        // 1 second buffer
+                    }, 1000);
+                    // 2 second water
+                }, 2000);
+            });
         });
     }
     private void updateValueColour(int value){
@@ -236,18 +288,13 @@ public class MainActivity extends AppCompatActivity{
 
                 // Basically jots down a note of the latest reading
                 SharedPreferences prefs = getSharedPreferences("MyApp", MODE_PRIVATE);
+
                 prefs.edit().putInt("lastReading", moistureInt).apply();
 
                 tvSensorValue.setText(String.valueOf(moistureInt));
                 updateValueColour(moistureInt);
-                //DataManager.getInstance().addReading(moistureInt);
-                //updateReadingCount();
-
-                // added notification check
-                //int threshold = prefs.getInt("threshold", 30);
-                //if(moistureInt < threshold){
                     sendNotification(moistureInt);
-                //}
+
 
                 // Save reading with timestamp to Firebase
                 long timestamp = System.currentTimeMillis();
@@ -328,20 +375,46 @@ public class MainActivity extends AppCompatActivity{
     }
     // Real time updates on tv Sensor value
     private void startRealtimeUpdates() {
+
         database.child("moisture").addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
                 if (snapshot.exists()) {
+
                     int moistureInt = Integer.parseInt(snapshot.getValue().toString());
                     currentMoisture = moistureInt;
-                    // Update the UI immediately when Firebase changes
+
                     tvSensorValue.setText(String.valueOf(moistureInt));
-                    // Update according to parameters
                     updateValueColour(moistureInt);
 
-                    // Save to prefs so it's there on next app launch
-                    getSharedPreferences("MyApp", MODE_PRIVATE)
-                            .edit().putInt("lastReading", moistureInt).apply();
+                    SharedPreferences prefs = getSharedPreferences("MyApp", MODE_PRIVATE);
+                    prefs.edit().putInt("lastReading", moistureInt).apply();
+
+                    // AUTO WATERING when checking firebase reading
+                    // Get preference for settings
+                    boolean automationEnabled = prefs.getBoolean("automationEnabled", false);
+
+                    if (automationEnabled && !manualOverride) {
+
+                        boolean shouldWater = moistureInt < 20;
+
+                        // auto trigger prevents multiple fires
+                        if (shouldWater && !autoTriggerActive) {
+
+                            autoTriggerActive = true;
+
+                            database.child("pump").setValue(true);
+                            Toast.makeText(MainActivity.this,
+                                    "Auto watering 💧", Toast.LENGTH_SHORT).show();
+
+                            new android.os.Handler().postDelayed(() -> {
+                                database.child("pump").setValue(false);
+                                autoTriggerActive = false;
+                            }, 1000);
+                        }
+                    }
                 }
             }
 

@@ -26,6 +26,9 @@ android:background="#FFFFFF" - White background (hex colour)
     height = 0dp, means calculate my height
     weight = 1, means take all remaining space
     result: fills everything except navigation bar
+    wrap_content shrinks to fit content
+    match_parent stretches to fit parent
+    0dp height - let system decide the size
     -->
 
     <ScrollView
@@ -144,13 +147,25 @@ android:background="#FFFFFF" - White background (hex colour)
 
                 <Button
                     android:id="@+id/btnUpdate"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
                     android:backgroundTint="#FA4A80"
                     android:padding="16dp"
-                    android:text="💃Update💃"
+                    android:text="Update"
                     android:textColor="#FFFFFF" />
+
+                <Button
+                    android:id="@+id/btnWater"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:backgroundTint="#FA4A80"
+                    android:padding="16dp"
+                    android:text="Water"
+                    android:textColor="#FFFFFF"/>
 
             </LinearLayout>
 

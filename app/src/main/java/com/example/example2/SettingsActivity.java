@@ -105,8 +105,10 @@ public class SettingsActivity extends AppCompatActivity {
             boolean automationEnabled = switchAutomation.isChecked();
             boolean notificationsEnabled = switchNotifications.isChecked();
 
-            // ← added threshold reading and saving
+            // Added threshold reading and saving
             String thresholdStr = etThreshold.getText().toString();
+            // tenary operation - short way of if else
+            // condition ? valueIfTrue : valueIfFalse
             int threshold = thresholdStr.isEmpty() ? 30 : Integer.parseInt(thresholdStr);
 
             SharedPreferences prefs = getSharedPreferences("MyApp", MODE_PRIVATE);
@@ -164,7 +166,7 @@ public class SettingsActivity extends AppCompatActivity {
                             csv.append(dateTime).append(",").append(value).append("\n");
                         }
 
-                        // Generate filename with unique timestamp idnetifier
+                        // Generate filename with unique timestamp identifier
                         try {
                             String fileName = "moisture_readings_" +
                                     new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())

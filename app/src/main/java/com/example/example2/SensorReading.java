@@ -1,9 +1,12 @@
 package com.example.example2;
 
+// Class with helper methods for the graphsActivity. Methods to get timestamp(), values() and
+// status based on conditionals
 public class SensorReading {
     private int value;
     private long timestamp;
 
+    // Constructor when making object
     public SensorReading(int value, long timestamp){
         this.value = value;
         this.timestamp = timestamp;
