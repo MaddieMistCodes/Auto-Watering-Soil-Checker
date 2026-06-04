@@ -50,8 +50,8 @@ Similarily, if the plant is unhappy - it will inform you with unhappy plant puns
 <img width="250" height="600" alt="Screenshot_20260327-114310 (1)" src="https://github.com/user-attachments/assets/9b776b84-92ea-4966-ab30-7718dd9ab168" />
 
 ## 🌼The Circuit
-The circuit was set up using the following components:
-• ESP32  
+The circuit was set up using the following components:  
+• ESP32    
 • Submersible Water Pump  
 • Capacitive Soil Moisture Sensor  
 • 5V Power Supply  
